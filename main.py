@@ -1,16 +1,54 @@
-# This is a sample Python script.
+from flask import Flask
 
-# Press Shift+F10 to execute it or replace it with your code.
-# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+import utils
+
+app = Flask(__name__)
+
+@app.route("/")
+
+def index():
+    result = '<br>'
+    candidates = utils.get_candidates_all()
+
+    for candidate in candidates:
+        result += candidate['name'] + '<br>'
+        result += candidate['position'] + '<br>'
+        result += candidate['skills'] + '<br>'
+        result += '<br>'
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+    return f'<pre> {result} </pre>'
+
+@app.route("/candidate/<int:pk>")
+def get_candidate(pk):
+    candidate = utils.get_candidate_by_pk(pk)
+
+    if candidate == 'Not Found':
+        return candidate
+
+    result = '<br>'
+    result += candidate['name'] + '<br>'
+    result += candidate['position'] + '<br>'
+    result += candidate['skills'] + '<br>'
+
+    return f"""
+         <img src="{candidate['picture']}">
+         <pre> {result} </pre>
+    """
+@app.route("/candidate/<skill>")
+def get_candidate_by_skill(skill):
+    result = '<br>'
+    candidates = utils.get_candidate_by_skill(skill)
+
+    for candidate in candidates:
+        result += '<br>'
+        result += candidate['name'] + '<br>'
+        result += candidate['position'] + '<br>'
+        result += candidate['skills'] + '<br>'
+        result += '<br>'
+
+    return f'<pre> {result} </pre>'
 
 
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
-
-# See PyCharm help at https://www.jetbrains.com/help/pycharm/
+    app.run(debug=True)
